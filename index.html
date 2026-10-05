@@ -367,6 +367,7 @@
 
 <script>
   document.getElementById("year").textContent = new Date().getFullYear();
+  var themeTransition = null;
   document.getElementById("themeToggle").addEventListener("click", function () {
     var root = document.documentElement;
     var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
@@ -380,8 +381,10 @@
       return;
     }
     root.classList.add("theme-switching");
-    document.startViewTransition(switchTheme).finished.finally(function () {
-      root.classList.remove("theme-switching");
+    // A new transition skips the running one, so only the latest may clear the class
+    var transition = themeTransition = document.startViewTransition(switchTheme);
+    transition.finished.finally(function () {
+      if (themeTransition === transition) root.classList.remove("theme-switching");
     });
   });
 
