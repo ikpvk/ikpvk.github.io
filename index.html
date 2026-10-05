@@ -150,7 +150,25 @@
   .hero p.lead { max-width: 60ch; color: var(--muted); margin: 0 0 32px; }
   .cursor { display: inline-block; width: .55em; height: 1em; background: var(--accent); vertical-align: -0.12em; margin-left: 4px; animation: blink 1.1s steps(1) infinite; }
   @keyframes blink { 50% { opacity: 0; } }
-  @media (prefers-reduced-motion: reduce) { .cursor { animation: none; } html { scroll-behavior: auto; } }
+  @media (prefers-reduced-motion: reduce) { .cursor { animation: none; } html { scroll-behavior: auto; } body { transition: none; } }
+
+  /* Theme switch: the new theme sweeps in from the top-left corner behind a soft diagonal edge.
+     A triangle mask with a faded hypotenuse grows until it covers the viewport.
+     Adapted from the "polygon-gradient" example at https://theme-toggle.rdsx.dev/ */
+  ::view-transition-old(root) {
+    animation: none;
+    z-index: -1;
+  }
+  ::view-transition-new(root) {
+    -webkit-mask: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><defs><linearGradient id="g" x1="0" y1="0" x2="20.5" y2="20.5" gradientUnits="userSpaceOnUse"><stop stop-color="%23000"/><stop offset=".845" stop-color="%23000"/><stop offset=".95" stop-color="%23000" stop-opacity="0"/></linearGradient></defs><path d="M0 0H40L0 40z" fill="url(%23g)"/></svg>') top left / 0 no-repeat;
+    mask: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><defs><linearGradient id="g" x1="0" y1="0" x2="20.5" y2="20.5" gradientUnits="userSpaceOnUse"><stop stop-color="%23000"/><stop offset=".845" stop-color="%23000"/><stop offset=".95" stop-color="%23000" stop-opacity="0"/></linearGradient></defs><path d="M0 0H40L0 40z" fill="url(%23g)"/></svg>') top left / 0 no-repeat;
+    animation: theme-sweep 1.5s ease both;
+  }
+  @keyframes theme-sweep {
+    to { -webkit-mask-size: 200vmax; mask-size: 200vmax; }
+  }
+  /* The sweep replaces the colour fade on body */
+  .theme-switching body { transition: none; }
 
   .btns { display: flex; flex-wrap: wrap; gap: 12px; }
   .btn {
@@ -349,11 +367,25 @@
 
 <script>
   document.getElementById("year").textContent = new Date().getFullYear();
+  var themeTransition = null;
   document.getElementById("themeToggle").addEventListener("click", function () {
     var root = document.documentElement;
     var next = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
-    root.setAttribute("data-theme", next);
-    try { localStorage.setItem("theme", next); } catch (e) {}
+    function switchTheme() {
+      root.setAttribute("data-theme", next);
+      try { localStorage.setItem("theme", next); } catch (e) {}
+    }
+    // Animate with the View Transitions API where supported; otherwise switch instantly
+    if (!document.startViewTransition || matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      switchTheme();
+      return;
+    }
+    root.classList.add("theme-switching");
+    // A new transition skips the running one, so only the latest may clear the class
+    var transition = themeTransition = document.startViewTransition(switchTheme);
+    transition.finished.finally(function () {
+      if (themeTransition === transition) root.classList.remove("theme-switching");
+    });
   });
 
   // Mobile menu
