@@ -35,11 +35,19 @@ var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 
 //sounds
 var volume = 0.3;
-var soundJump = loadSound("assets/sounds/sfx_wing.ogg");
-var soundScore = loadSound("assets/sounds/sfx_point.ogg");
-var soundHit = loadSound("assets/sounds/sfx_hit.ogg");
-var soundDie = loadSound("assets/sounds/sfx_die.ogg");
-var soundSwoosh = loadSound("assets/sounds/sfx_swooshing.ogg");
+var audioContext = null;
+try
+{
+   var AudioContextClass = window.AudioContext || window.webkitAudioContext;
+   if(AudioContextClass)
+      audioContext = new AudioContextClass();
+}
+catch(e) {}
+var soundJump = loadSound("assets/sounds/sfx_wing.mp3");
+var soundScore = loadSound("assets/sounds/sfx_point.mp3");
+var soundHit = loadSound("assets/sounds/sfx_hit.mp3");
+var soundDie = loadSound("assets/sounds/sfx_die.mp3");
+var soundSwoosh = loadSound("assets/sounds/sfx_swooshing.mp3");
 
 //loops: one fixed-step loop drives the bird, the pipes and pipe spawning,
 //so movement and collision can never drift apart
@@ -85,19 +93,47 @@ var el = {
 
 function loadSound(src)
 {
-   var audio = new Audio(src);
-   audio.volume = volume;
-   return audio;
+   var sound = { buffer: null };
+   if(audioContext)
+   {
+      //Fetch and decode once, away from the input handler. MP3 also works on older iOS.
+      fetch(src).then(function(response) {
+         if(!response.ok)
+            throw new Error("Sound unavailable");
+         return response.arrayBuffer();
+      }).then(function(data) {
+         return audioContext.decodeAudioData(data);
+      }).then(function(buffer) {
+         sound.buffer = buffer;
+      }).catch(function() {});
+   }
+   return sound;
 }
 
-function playSound(audio)
+function unlockAudio()
 {
-   audio.pause();
-   audio.currentTime = 0;
-   var playing = audio.play();
-   //play() rejects if the file failed to load or autoplay is blocked; the game doesn't depend on it
-   if(playing)
-      playing.catch(function() {});
+   //iOS requires resume() inside a user gesture, before timer-driven effects can play.
+   if(audioContext && audioContext.state !== "running")
+      audioContext.resume().catch(function() {});
+}
+
+function playSound(sound)
+{
+   //Skip unavailable sounds; never wait for loading or replay a delayed flap.
+   if(!audioContext || audioContext.state !== "running" || !sound.buffer)
+      return;
+
+   var source = audioContext.createBufferSource();
+   var gain = audioContext.createGain();
+   source.buffer = sound.buffer;
+   gain.gain.value = volume;
+   source.connect(gain);
+   gain.connect(audioContext.destination);
+   source.onended = function() {
+      source.disconnect();
+      gain.disconnect();
+   };
+   source.start();
 }
 
 //Scales the playfield down on viewports shorter than its 525px minimum height
@@ -384,6 +420,8 @@ document.addEventListener("keydown", function(e) {
    if(e.repeat)
       return;
 
+   unlockAudio();
+
    //in ScoreScreen, hitting space should click the "replay" button. else it's just a regular spacebar hit
    if(currentstate == states.ScoreScreen)
       replay();
@@ -402,6 +440,7 @@ el.container.addEventListener("pointerdown", function(e) {
    if(e.target.closest("a, button"))
       return;
 
+   unlockAudio();
    screenClick();
 });
 
