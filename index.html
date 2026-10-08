@@ -267,6 +267,25 @@
     background: var(--text);
   }
 
+  /* Easter egg: toggling the theme 5 times opens Flappy Bird (flappy/) full screen */
+  .flappy {
+    width: 100%; height: 100%; max-width: none; max-height: none;
+    margin: 0; padding: 0; border: 0; background: #4ec0ca;
+  }
+  .flappy::backdrop { background: rgba(0, 0, 0, .6); }
+  .flappy iframe { display: block; width: 100%; height: 100%; border: 0; }
+  .flappy-close {
+    position: absolute; top: 12px; right: 12px;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px; padding: 0;
+    background: var(--surface); color: var(--text);
+    border: 1px solid var(--border); border-radius: 8px;
+    cursor: pointer;
+  }
+  .flappy-close:hover { border-color: var(--muted); }
+  .flappy-close svg { width: 18px; height: 18px; }
+  :root:has(.flappy[open]) { overflow: hidden; }
+
   /* Mobile */
   @media (max-width: 640px) {
     body { font-size: 14px; }
@@ -557,6 +576,14 @@
   </div>
 </footer>
 
+<!-- Easter egg: the game loads into the iframe only when the dialog opens -->
+<dialog class="flappy" id="flappy" aria-label="Flappy Bird">
+  <iframe id="flappyFrame" title="Flappy Bird"></iframe>
+  <button class="flappy-close" id="flappyClose" type="button" aria-label="Close game">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+</dialog>
+
 <script>
   document.getElementById("year").textContent = new Date().getFullYear();
   var themeTransition = null;
@@ -578,6 +605,36 @@
     transition.finished.finally(function () {
       if (themeTransition === transition) root.classList.remove("theme-switching");
     });
+  });
+
+  // Easter egg: every 5th theme toggle opens Flappy Bird
+  var flappy = document.getElementById("flappy");
+  var flappyFrame = document.getElementById("flappyFrame");
+  var themeToggles = 0;
+  document.getElementById("themeToggle").addEventListener("click", function () {
+    if (++themeToggles < 5 || flappy.open) return;
+    themeToggles = 0;
+    audio.pause();
+    flappy.showModal();
+    flappyFrame.src = "flappy/index.html";
+  });
+  flappyFrame.addEventListener("load", function () {
+    if (!flappy.open) return;
+    // The game reads Space from its own document, so give it focus. Keys pressed
+    // inside the iframe never reach this page, so listen for Escape there too.
+    flappyFrame.focus();
+    try {
+      flappyFrame.contentDocument.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") flappy.close();
+      });
+    } catch (e) {}
+  });
+  document.getElementById("flappyClose").addEventListener("click", function () {
+    flappy.close();
+  });
+  // Unloading the game stops its loop and sounds; the browser returns focus to the toggle
+  flappy.addEventListener("close", function () {
+    flappyFrame.src = "about:blank";
   });
 
   // Mobile menu
