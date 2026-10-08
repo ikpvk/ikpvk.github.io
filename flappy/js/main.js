@@ -102,7 +102,10 @@ function loadSound(src)
             throw new Error("Sound unavailable");
          return response.arrayBuffer();
       }).then(function(data) {
-         return audioContext.decodeAudioData(data);
+         //older iOS only supports the callback form, which newer browsers still accept
+         return new Promise(function(resolve, reject) {
+            audioContext.decodeAudioData(data, resolve, reject);
+         });
       }).then(function(buffer) {
          sound.buffer = buffer;
       }).catch(function() {});
@@ -442,6 +445,12 @@ el.container.addEventListener("pointerdown", function(e) {
 
    unlockAudio();
    screenClick();
+});
+
+//iOS doesn't treat a touch pointerdown as a user gesture, so also unlock on release
+el.container.addEventListener("pointerup", function(e) {
+   if(e.isPrimary)
+      unlockAudio();
 });
 
 function screenClick()
