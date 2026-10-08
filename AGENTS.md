@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 
-This is a single-page portfolio hosted on GitHub Pages. `index.html` contains markup, CSS, vanilla JavaScript, and inline SVG icons. Assets include `favicon.svg`, `fonts/` (JetBrains Mono and its SIL OFL license), `Krishna_Prasad_V_K_resume.pdf`, and `audio/` (the MP3 and `CREDITS.md`). Keep portfolio content consistent with the résumé. `CLAUDE.md` documents implementation details. There are no separate source modules, tests, or package dependencies.
+This is a single-page portfolio hosted on GitHub Pages. `index.html` contains markup, CSS, vanilla JavaScript, and inline SVG icons. Assets include `favicon.svg`, `fonts/` (JetBrains Mono and its SIL OFL license), `Krishna_Prasad_V_K_resume.pdf`, and `audio/` (the MP3 and `CREDITS.md`), and `flappy/` (a copied Flappy Bird game, Apache-2.0, opened by every 5th theme toggle). Keep portfolio content consistent with the résumé. `CLAUDE.md` documents implementation details. There are no separate source modules, tests, or package dependencies.
 
 ## Build, Test, and Development Commands
 
@@ -24,7 +24,7 @@ The footer player uses `audio/rose-water.mp3`. Preserve visible artist and track
 
 ## Testing Guidelines
 
-Validation is manual, with no coverage threshold. Check 320px/360px layouts and both sides of 640px, with and without JavaScript. Verify both themes, persistence, rapid toggles, keyboard focus, skip link, menu closing, and reduced motion. Test playback, pause, seeking, volume, and supported OS media controls. Confirm CV/assets load and inspect console errors.
+Validation is manual, with no coverage threshold. Check 320px/360px layouts and both sides of 640px, with and without JavaScript. Verify both themes, persistence, rapid toggles, keyboard focus, skip link, menu closing, and reduced motion. Test playback, pause, seeking, volume, and supported OS media controls. For the easter egg, check that 5 toggles open the game, that Space and taps play it, and that Escape and the close button both close it and return focus to the toggle. Confirm CV/assets load and inspect console errors.
 
 ## Commit & Pull Request Guidelines
 
