@@ -113,7 +113,6 @@
   .skip-link:focus { top: 12px; text-decoration: none; }
   header .wrap { display: flex; align-items: center; justify-content: space-between; height: 56px; gap: 12px; }
   .logo { font-weight: 800; color: var(--text); }
-  .logo span { color: var(--accent); }
   .header-actions { display: flex; align-items: center; gap: 8px; }
   nav ul { display: flex; align-items: center; gap: 20px; list-style: none; margin: 0 12px 0 0; padding: 0; }
   nav a { color: var(--muted); font-size: 14px; }
@@ -218,6 +217,55 @@
   .contact p { color: var(--muted); max-width: 60ch; margin: 0 0 24px; }
 
   footer { padding: 32px 0 48px; color: var(--muted); font-size: 13px; }
+  /* Music player: a small card above the footer line, shown only once JS has run */
+  .player { display: none; }
+  .js .player {
+    display: flex; align-items: center; gap: 16px;
+    margin-bottom: 24px; padding: 12px 16px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    color: var(--text);
+  }
+  .player button {
+    display: inline-flex; align-items: center; justify-content: center; flex: none;
+    padding: 0; border: 0; cursor: pointer;
+  }
+  .player-play { width: 40px; height: 40px; border-radius: 50%; background: var(--accent); color: var(--bg); }
+  .player-play:hover { filter: brightness(1.1); }
+  .player-play svg { width: 18px; height: 18px; }
+  .player.playing .icon-play, .player:not(.playing) .icon-pause { display: none; }
+  .player-track { min-width: 0; line-height: 1.35; }
+  .player-track b, .player-track span { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .player-track b { font-size: 14px; }
+  .player-track span { font-size: 12px; color: var(--muted); }
+  .player-progress { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+  .player-progress time { font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .player-volume { display: flex; align-items: center; gap: 8px; color: var(--muted); }
+  .player-volume svg { width: 16px; height: 16px; flex: none; }
+  .player-volume input { width: 80px; }
+
+  /* Sliders: an accent fill up to the thumb, driven by --p from the script */
+  .player input[type="range"] {
+    -webkit-appearance: none; appearance: none;
+    flex: 1; min-width: 0; height: 16px; margin: 0;
+    background: transparent; cursor: pointer;
+  }
+  .player input[type="range"]::-webkit-slider-runnable-track {
+    height: 4px; border-radius: 2px;
+    background: linear-gradient(to right, var(--accent) var(--p, 0%), var(--border) var(--p, 0%));
+  }
+  .player input[type="range"]::-moz-range-track {
+    height: 4px; border-radius: 2px;
+    background: linear-gradient(to right, var(--accent) var(--p, 0%), var(--border) var(--p, 0%));
+  }
+  .player input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 12px; height: 12px; margin-top: -4px; border: 0; border-radius: 50%;
+    background: var(--text);
+  }
+  .player input[type="range"]::-moz-range-thumb {
+    width: 12px; height: 12px; border: 0; border-radius: 50%;
+    background: var(--text);
+  }
 
   /* Mobile */
   @media (max-width: 640px) {
@@ -237,11 +285,24 @@
     }
     .js nav ul.open { display: flex; }
     .js nav li a { display: block; padding: 14px 16px; font-size: 15px; border-top: 1px solid var(--border); }
+    /* One full-width button per row */
+    .btns { flex-direction: column; }
+    .btn { justify-content: center; }
     .hero { padding: 64px 0 56px; }
     section { padding: 48px 0; }
     .stats { grid-template-columns: 1fr; }
     .skills, .projects { grid-template-columns: 1fr; }
     .jobs li { grid-template-columns: 1fr; }
+    /* Put "@ company" on its own line under the title */
+    .jobs h3 span { display: block; }
+    /* The progress bar moves to its own row under the track */
+    .js .player { flex-wrap: wrap; gap: 12px; }
+    .player-track { flex: 1; }
+    .player-progress { flex-basis: 100%; }
+  }
+  /* Phones and tablets set volume with their own buttons (iOS ignores it from scripts) */
+  @media (max-width: 640px), (hover: none) {
+    .player-volume { display: none; }
   }
 </style>
 </head>
@@ -251,7 +312,7 @@
 
 <header>
   <div class="wrap">
-    <a href="#top" class="logo">kris<span>@</span>dev</a>
+    <a href="#top" class="logo">Krishna</a>
     <nav class="header-actions" aria-label="Main">
       <ul id="navLinks">
         <li><a href="#about">about</a></li>
@@ -470,7 +531,30 @@
 </main>
 
 <footer>
-  <div class="wrap">© <span id="year"></span> Krishna Prasad V K · built with plain HTML &amp; CSS</div>
+  <div class="wrap">
+    <!-- Music player -->
+    <div class="player" id="player" role="region" aria-label="Music player">
+      <audio id="playerAudio" src="audio/rose-water.mp3" preload="none" loop></audio>
+      <button class="player-play" id="playerPlay" type="button" aria-label="Play">
+        <svg class="icon-play" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z"/></svg>
+        <svg class="icon-pause" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>
+      </button>
+      <div class="player-track">
+        <b>rose water</b>
+        <span>massobeats · <a href="https://freetouse.com" target="_blank" rel="noopener">freetouse.com</a></span>
+      </div>
+      <div class="player-progress">
+        <time id="playerCurrent">0:00</time>
+        <input type="range" id="playerSeek" min="0" max="139" step="1" value="0" aria-label="Seek" aria-valuetext="0:00 of 2:19">
+        <time id="playerDuration">2:19</time>
+      </div>
+      <label class="player-volume">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg>
+        <input type="range" id="playerVolume" min="0" max="1" step="0.05" value="0.6" aria-label="Volume">
+      </label>
+    </div>
+    © <span id="year"></span> Krishna Prasad V K · built with plain HTML &amp; CSS
+  </div>
 </footer>
 
 <script>
@@ -512,6 +596,73 @@
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape") setMenu(false);
   });
+
+  // Music player
+  var player = document.getElementById("player");
+  var audio = document.getElementById("playerAudio");
+  var playerPlay = document.getElementById("playerPlay");
+  var playerSeek = document.getElementById("playerSeek");
+  var playerCurrent = document.getElementById("playerCurrent");
+  var playerDuration = document.getElementById("playerDuration");
+  var playerVolume = document.getElementById("playerVolume");
+  var seeking = false;
+  function formatTime(s) {
+    s = Math.floor(s || 0);
+    return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
+  }
+  // Fill the slider up to its thumb
+  function setFill(input) {
+    input.style.setProperty("--p", (input.value - input.min) / (input.max - input.min) * 100 + "%");
+  }
+  function showTime(t) {
+    playerCurrent.textContent = formatTime(t);
+    playerSeek.setAttribute("aria-valuetext", formatTime(t) + " of " + playerDuration.textContent);
+    setFill(playerSeek);
+  }
+  audio.volume = playerVolume.value;
+  setFill(playerVolume);
+  setFill(playerSeek);
+  playerPlay.addEventListener("click", function () {
+    if (audio.paused) audio.play().catch(function () {});
+    else audio.pause();
+  });
+  audio.addEventListener("play", function () {
+    player.classList.add("playing");
+    playerPlay.setAttribute("aria-label", "Pause");
+  });
+  audio.addEventListener("pause", function () {
+    player.classList.remove("playing");
+    playerPlay.setAttribute("aria-label", "Play");
+  });
+  audio.addEventListener("loadedmetadata", function () {
+    playerSeek.max = Math.floor(audio.duration);
+    playerDuration.textContent = formatTime(audio.duration);
+  });
+  audio.addEventListener("timeupdate", function () {
+    if (seeking) return;
+    playerSeek.value = audio.currentTime;
+    showTime(audio.currentTime);
+  });
+  // While dragging, preview the time and only seek on release
+  playerSeek.addEventListener("input", function () {
+    seeking = true;
+    showTime(playerSeek.value);
+  });
+  playerSeek.addEventListener("change", function () {
+    audio.currentTime = playerSeek.value;
+    seeking = false;
+  });
+  playerVolume.addEventListener("input", function () {
+    audio.volume = playerVolume.value;
+    setFill(playerVolume);
+  });
+  // Show the track and controls on the lock screen and in the OS media controls
+  if ("mediaSession" in navigator) {
+    navigator.mediaSession.metadata = new MediaMetadata({ title: "rose water", artist: "massobeats" });
+    navigator.mediaSession.setActionHandler("play", function () { audio.play().catch(function () {}); });
+    navigator.mediaSession.setActionHandler("pause", function () { audio.pause(); });
+    navigator.mediaSession.setActionHandler("seekto", function (e) { audio.currentTime = e.seekTime; });
+  }
 </script>
 </body>
 </html>

@@ -2,26 +2,30 @@
 
 ## Project Structure & Module Organization
 
-This repository contains a single-page personal portfolio hosted on GitHub Pages. `index.html` holds the page markup, inline CSS, vanilla JavaScript, and SVG icons. `favicon.svg` supplies the browser icon; `fonts/` contains the self-hosted JetBrains Mono font and its SIL OFL license. `README.md` describes the repository, and `CLAUDE.md` documents implementation details. There are no separate source modules, test directories, or package dependencies.
+This is a single-page portfolio hosted on GitHub Pages. `index.html` contains markup, CSS, vanilla JavaScript, and inline SVG icons. Assets include `favicon.svg`, `fonts/` (JetBrains Mono and its SIL OFL license), `Krishna_Prasad_V_K_resume.pdf`, and `audio/` (the MP3 and `CREDITS.md`). Keep portfolio content consistent with the résumé. `CLAUDE.md` documents implementation details. There are no separate source modules, tests, or package dependencies.
 
 ## Build, Test, and Development Commands
 
 - `python3 -m http.server 8000`: serve the repository locally; visit `http://localhost:8000` to check changes with normal HTTP asset loading.
 - `git diff --check`: check changes for whitespace errors before committing.
-- `git diff -- index.html`: review page changes before opening a pull request.
+- `git diff -- index.html AGENTS.md CLAUDE.md`: review page and documentation changes.
 
-There is no build step, automated test command, formatter, or linter. GitHub Pages serves the files directly from `main`; merging changes there deploys the site.
+There is no build step, automated test command, formatter, or linter. Merging to `main` deploys the site. Python's basic HTTP server lacks byte-range support; use a server supporting ranges to verify audio seeking.
 
 ## Coding Style & Naming Conventions
 
-Match the surrounding formatting: two-space indentation in CSS and JavaScript, double-quoted HTML attributes and JavaScript strings, and semicolons in JavaScript. Use descriptive kebab-case CSS classes such as `theme-toggle` and camelCase JavaScript names such as `setMenu`. Keep related styles in the existing commented sections.
+Match surrounding formatting: two-space CSS/JavaScript indentation, double-quoted HTML attributes and JavaScript strings, and JavaScript semicolons. Use kebab-case CSS classes (`theme-toggle`) and camelCase JavaScript names (`setMenu`). Keep related styles in existing commented sections.
 
-Use CSS custom properties for colors, and keep the dark, system-light, and explicit-light palettes synchronized. Preserve the early theme initialization, JavaScript-disabled navigation, reduced-motion behavior, and accessible labels and focus styles. Keep sticky-header height and section scroll offsets aligned.
+Keep CSS color palettes synchronized and preserve early theme initialization, reduced-motion behavior, accessible labels, and focus styles. On mobile without JavaScript, navigation wraps and the header is non-sticky. Keep sticky-header height and section scroll offsets aligned.
+
+## Music Player & Asset Conventions
+
+The footer player uses `audio/rose-water.mp3`. Preserve visible artist and track credits per `audio/CREDITS.md`, `preload="none"`, and visibility only under `.js`. At 640px and below, progress moves to a separate row; volume controls are hidden there and on devices without hover. Keep slider fills (`--p`), play/pause labels, and Media Session handlers synchronized with playback.
 
 ## Testing Guidelines
 
-Validation is manual; no test framework or coverage threshold is configured. Check desktop and mobile layouts around the 640px breakpoint, both themes, saved theme persistence after reload, and rapid theme toggles. Verify keyboard navigation, the skip link, menu closing via Escape and link clicks, reduced-motion settings, and navigation with JavaScript disabled. Confirm assets load and inspect the browser console for errors.
+Validation is manual, with no coverage threshold. Check 320px/360px layouts and both sides of 640px, with and without JavaScript. Verify both themes, persistence, rapid toggles, keyboard focus, skip link, menu closing, and reduced motion. Test playback, pause, seeking, volume, and supported OS media controls. Confirm CV/assets load and inspect console errors.
 
 ## Commit & Pull Request Guidelines
 
-Recent commits use short, imperative descriptions, such as “Animate the theme toggle with a diagonal sweep”; no mandatory prefix convention is established. Use descriptive feature branches such as `theme-sweep-transition` and open PRs targeting `main`. Include the change's purpose, manual checks performed, linked issues when applicable, and desktop/mobile screenshots for visual changes.
+Use short, imperative commit messages and descriptive feature branches; no mandatory prefix convention exists. Target `main` in PRs. Include purpose, manual checks, relevant issues, and screenshots for visual changes. Include newly referenced assets in commits.
