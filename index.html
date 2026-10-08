@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kris · Backend Developer</title>
-<meta name="description" content="Backend software developer with almost 10 years of experience building services in Java and Python.">
+<title>Krishna Prasad V K · Senior Software Engineer</title>
+<meta name="description" content="Senior software engineer in Hyderabad with almost 10 years of backend experience building Java Spring Boot microservices, data pipelines and services for banking and SaaS products.">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="canonical" href="https://ikpvk.github.io/">
 
 <!-- Link previews (LinkedIn, Slack, etc.) -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://ikpvk.github.io/">
-<meta property="og:title" content="Kris · Backend Developer">
-<meta property="og:description" content="Backend software developer with almost 10 years of experience building services in Java and Python.">
+<meta property="og:title" content="Krishna Prasad V K · Senior Software Engineer">
+<meta property="og:description" content="Senior software engineer in Hyderabad with almost 10 years of backend experience building Java Spring Boot microservices, data pipelines and services for banking and SaaS products.">
 <meta name="twitter:card" content="summary">
 
 <!-- Self-hosted JetBrains Mono (variable weight, Latin subset; SIL OFL, see fonts/OFL.txt) -->
@@ -196,11 +196,23 @@
   .tags { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0; }
   .tags li { font-size: 13px; padding: 2px 10px; border: 1px solid var(--border); border-radius: 999px; color: var(--muted); }
 
-  /* Focus list */
-  .focus { list-style: none; margin: 0; padding: 0; }
-  .focus li { padding: 12px 0 12px 28px; position: relative; border-bottom: 1px dashed var(--border); }
-  .focus li:last-child { border-bottom: 0; }
-  .focus li::before { content: ">"; position: absolute; left: 4px; color: var(--accent); }
+  /* Experience timeline */
+  .jobs { list-style: none; margin: 0; padding: 0; }
+  .jobs li { display: grid; grid-template-columns: 170px 1fr; gap: 4px 24px; padding: 20px 0; border-bottom: 1px dashed var(--border); }
+  .jobs li:first-child { padding-top: 0; }
+  .jobs li:last-child { border-bottom: 0; }
+  .jobs time { color: var(--muted); font-size: 13px; padding-top: 2px; }
+  .jobs h3 { margin: 0; font-size: 15px; }
+  .jobs h3 span { color: var(--accent-2); font-weight: 400; }
+  .jobs .place { margin: 0 0 8px; color: var(--muted); font-size: 13px; }
+  .jobs p:last-child { margin: 0; max-width: 68ch; }
+  .jobs b { color: var(--accent); }
+  h2.sub { margin-top: 48px; }
+
+  /* Projects */
+  .projects { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .projects .card { display: flex; flex-direction: column; }
+  .projects p { margin: 0 0 16px; color: var(--muted); font-size: 14px; flex: 1; }
 
   /* Contact */
   .contact p { color: var(--muted); max-width: 60ch; margin: 0 0 24px; }
@@ -211,6 +223,11 @@
   @media (max-width: 640px) {
     body { font-size: 14px; }
     nav ul { gap: 14px; margin: 0; }
+    /* Without JS there is no menu button, so the links wrap below the logo.
+       The taller header can't be sticky, or it would cover the 56px scroll-margin targets. */
+    :root:not(.js) header { position: static; }
+    :root:not(.js) header .wrap { flex-wrap: wrap; height: auto; min-height: 56px; padding-block: 12px; }
+    :root:not(.js) nav ul { flex-wrap: wrap; gap: 4px 14px; }
     .js .menu-toggle { display: inline-flex; }
     .js nav ul {
       display: none;
@@ -223,7 +240,8 @@
     .hero { padding: 64px 0 56px; }
     section { padding: 48px 0; }
     .stats { grid-template-columns: 1fr; }
-    .skills { grid-template-columns: 1fr; }
+    .skills, .projects { grid-template-columns: 1fr; }
+    .jobs li { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -237,6 +255,8 @@
     <nav class="header-actions" aria-label="Main">
       <ul id="navLinks">
         <li><a href="#about">about</a></li>
+        <li><a href="#experience">experience</a></li>
+        <li><a href="#projects">projects</a></li>
         <li><a href="#skills">skills</a></li>
         <li><a href="#contact">contact</a></li>
       </ul>
@@ -258,13 +278,17 @@
     <div class="wrap">
       <p class="prompt"><b>~$</b> whoami</p>
       <h1>Hi, I'm Kris.<span class="cursor" aria-hidden="true"></span></h1>
-      <p class="role">Backend Software Developer · Java &amp; Python</p>
+      <p class="role">Senior Software Engineer · Java &amp; Python · Hyderabad</p>
       <p class="lead">
-        I design and build the server-side systems that keep products running:
-        APIs, data pipelines and services that are reliable, observable and easy to maintain.
+        I build the backend systems that keep products running: Spring Boot microservices,
+        event-driven pipelines and data services for banking and SaaS products.
       </p>
       <div class="btns">
         <a class="btn primary" href="#contact">Get in touch</a>
+        <a class="btn" href="Krishna_Prasad_V_K_resume.pdf" download>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg>
+          Download CV
+        </a>
         <a class="btn" href="https://github.com/ikpvk" target="_blank" rel="noopener">
           <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .5a11.5 11.5 0 0 0-3.64 22.41c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.37-3.88-1.37-.53-1.33-1.3-1.69-1.3-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.77 2.7 1.26 3.36.96.1-.75.4-1.26.73-1.55-2.55-.29-5.24-1.28-5.24-5.69 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.42-2.7 5.4-5.26 5.68.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 12 .5z"/></svg>
           GitHub
@@ -278,19 +302,118 @@
     <div class="wrap">
       <h2>about</h2>
       <p>
-        I'm a software developer with almost a decade of experience in backend development.
-        Most of my work has been in the Java and Python ecosystems, building REST APIs,
-        integrating databases and message queues, and running services in production.
+        I'm Krishna Prasad V K, a software engineer with almost a decade of backend experience,
+        mostly in Java Spring Boot and Python. I've built trading-risk tools for an investment bank,
+        async services for a no-code platform, an in-house ETL and BI reporting, and a rewrite of a
+        legacy banking application.
       </p>
       <p>
-        I care about clean, well-tested code, sensible architecture, and systems that are
-        straightforward to operate. I enjoy working through performance problems and turning
-        complicated requirements into simple, dependable services.
+        I do my best work in teams that ship fast and take on hard problems. I've delivered features
+        on my own, across several teams, and as a team lead. Either way, we take the time to plan,
+        clarify requirements and get approvals before writing a line of code.
       </p>
       <div class="stats">
         <div class="stat"><b>~10 yrs</b><span>backend development</span></div>
-        <div class="stat"><b>Java</b><span>Spring ecosystem</span></div>
-        <div class="stat"><b>Python</b><span>Django · Flask · FastAPI</span></div>
+        <div class="stat"><b>5h → 15m</b><span>data warehouse load, after an in-house ETL rewrite</span></div>
+        <div class="stat"><b>4</b><span>companies, from banking to SaaS</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Experience -->
+  <section id="experience">
+    <div class="wrap">
+      <h2>experience</h2>
+      <ol class="jobs">
+        <li>
+          <time>Dec 2023 – Present</time>
+          <div>
+            <h3>Senior Software Engineer <span>@ Lloyds Technology Centre</span></h3>
+            <p class="place">Hyderabad</p>
+            <p>
+              Building applications that investment bank traders use to observe and manage risk,
+              mostly curves, to replace their reliance on Excel spreadsheets. Front ends use the Beacon
+              framework (Python), and back ends are Java Spring Boot microservices designed for
+              high-volume, high-frequency trade data. Alongside recreating the existing apps and flows,
+              we improve them.
+            </p>
+          </div>
+        </li>
+        <li>
+          <time>Oct 2021 – Nov 2023</time>
+          <div>
+            <h3>Senior Software Engineer <span>@ Brane Enterprises</span></h3>
+            <p class="place">Hyderabad</p>
+            <p>
+              Built back-end Java Spring Boot microservices for a no-code/low-code platform. The platform's
+              AI/ML components made most services asynchronous, so we built on Kafka, RabbitMQ and WebSockets.
+            </p>
+          </div>
+        </li>
+        <li>
+          <time>Mar 2019 – Oct 2021</time>
+          <div>
+            <h3>Senior Software Engineer <span>@ KloudGin</span></h3>
+            <p class="place">Hyderabad</p>
+            <p>
+              Built a BI reporting service on Amazon Redshift and QuickSight. Our in-house Java ETL replaced
+              Talend and cut the time to load the data warehouse from <b>5 hours to 15 minutes</b>.
+              The QuickSight reports covered customer reporting and internal billing.
+            </p>
+          </div>
+        </li>
+        <li>
+          <time>Oct 2016 – Oct 2018</time>
+          <div>
+            <h3>Software Engineer <span>@ Virtusa</span></h3>
+            <p class="place">Pune</p>
+            <p>
+              Redesigned Citi Bank's CitiManager commercial card application, moving legacy GWT code to an
+              MVC architecture on Java 8 and Spring Boot. Replaced slow, highly abstract stored procedures
+              with separate, optimised Oracle queries that run faster and are easier to read.
+            </p>
+          </div>
+        </li>
+      </ol>
+
+      <h2 class="sub">education</h2>
+      <ol class="jobs">
+        <li>
+          <time>2012 – 2016</time>
+          <div>
+            <h3>B.Tech <span>@ NIT Agartala</span></h3>
+            <p class="place">National Institute of Technology</p>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- Projects -->
+  <section id="projects">
+    <div class="wrap">
+      <h2>projects</h2>
+      <div class="projects">
+        <div class="card">
+          <h3><span>$</span> <a href="https://github.com/ikpvk/omarchy_learn_typing" target="_blank" rel="noopener">sofle-studio</a></h3>
+          <p>An offline Linux typing trainer for a 58-key split Sofle keyboard. It lights up the next key, including Shift and symbol-layer chords.</p>
+          <ul class="tags"><li>Python</li><li>GTK 4</li></ul>
+        </div>
+        <div class="card">
+          <h3><span>$</span> <a href="https://github.com/ikpvk/omar_top" target="_blank" rel="noopener">omar_top</a></h3>
+          <p>A simpler take on btop: a terminal resource monitor.</p>
+          <ul class="tags"><li>Go</li><li>TUI</li></ul>
+        </div>
+        <div class="card">
+          <h3><span>$</span> <a href="https://github.com/ikpvk/tui_world_clock_go" target="_blank" rel="noopener">tui_world_clock_go</a></h3>
+          <p>A terminal world clock that shows several time zones in a table.</p>
+          <ul class="tags"><li>Go</li><li>TUI</li></ul>
+        </div>
+        <div class="card">
+          <h3><span>$</span> <a href="https://github.com/ikpvk/omarchy_alias_pane" target="_blank" rel="noopener">omarchy_alias_pane</a></h3>
+          <p>A pane that lists every shell alias configured in Omarchy.</p>
+          <ul class="tags"><li>Shell</li><li>Linux</li></ul>
+        </div>
       </div>
     </div>
   </section>
@@ -301,44 +424,30 @@
       <h2>skills</h2>
       <div class="skills">
         <div class="card">
-          <h3><span>$</span> java</h3>
+          <h3><span>$</span> backend</h3>
           <ul class="tags">
-            <li>Java</li><li>Spring Boot</li><li>Spring Data</li><li>Hibernate / JPA</li><li>Maven</li><li>Gradle</li><li>JUnit</li>
+            <li>Java</li><li>Spring Boot</li><li>Microservices</li><li>REST APIs</li><li>Python</li><li>Data Structures &amp; Algorithms</li>
           </ul>
         </div>
         <div class="card">
-          <h3><span>$</span> python</h3>
+          <h3><span>$</span> data &amp; messaging</h3>
           <ul class="tags">
-            <li>Python</li><li>Django</li><li>Flask</li><li>FastAPI</li><li>SQLAlchemy</li><li>pytest</li>
+            <li>Oracle</li><li>MySQL</li><li>PostgreSQL</li><li>MongoDB</li><li>Redshift</li><li>Cassandra</li><li>Redis</li><li>Kafka</li>
           </ul>
         </div>
         <div class="card">
-          <h3><span>$</span> data</h3>
+          <h3><span>$</span> cloud &amp; ops</h3>
           <ul class="tags">
-            <li>PostgreSQL</li><li>MySQL</li><li>Redis</li><li>Kafka</li><li>RabbitMQ</li>
+            <li>AWS</li><li>Azure</li><li>GCP</li><li>Kubernetes</li><li>Docker</li><li>Linux</li><li>Jenkins</li><li>Harness</li><li>GitHub Actions</li>
           </ul>
         </div>
         <div class="card">
-          <h3><span>$</span> ops</h3>
+          <h3><span>$</span> monitoring &amp; ai tools</h3>
           <ul class="tags">
-            <li>Docker</li><li>Linux</li><li>Git</li><li>CI/CD</li><li>REST</li><li>Microservices</li>
+            <li>Grafana</li><li>Splunk</li><li>Prometheus</li><li>Claude Code</li><li>Codex</li><li>GitHub Copilot</li>
           </ul>
         </div>
       </div>
-    </div>
-  </section>
-
-  <!-- What I do -->
-  <section id="focus">
-    <div class="wrap">
-      <h2>what i do</h2>
-      <ul class="focus">
-        <li>Design and build REST APIs and backend services</li>
-        <li>Model data and tune queries for relational databases</li>
-        <li>Integrate systems with message queues and event-driven workflows</li>
-        <li>Write automated tests and keep codebases maintainable</li>
-        <li>Debug, profile and improve services running in production</li>
-      </ul>
     </div>
   </section>
 
@@ -348,21 +457,20 @@
       <h2>contact</h2>
       <p>Open to new opportunities and interesting backend problems. The best way to reach me is below.</p>
       <div class="btns">
-        <!-- TODO: replace with your real email address -->
-        <a class="btn primary" href="mailto:you@example.com">
+        <a class="btn primary" href="mailto:krishnaprasad.vk@outlook.com">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg>
           Email
         </a>
         <a class="btn" href="https://github.com/ikpvk" target="_blank" rel="noopener">GitHub</a>
-        <!-- TODO: replace with your LinkedIn profile URL -->
-        <a class="btn" href="https://www.linkedin.com/" target="_blank" rel="noopener">LinkedIn</a>
+        <a class="btn" href="https://www.linkedin.com/in/krishna-prasad-vk/" target="_blank" rel="noopener">LinkedIn</a>
+        <a class="btn" href="Krishna_Prasad_V_K_resume.pdf" download>Download CV</a>
       </div>
     </div>
   </section>
 </main>
 
 <footer>
-  <div class="wrap">© <span id="year"></span> Kris · built with plain HTML &amp; CSS</div>
+  <div class="wrap">© <span id="year"></span> Krishna Prasad V K · built with plain HTML &amp; CSS</div>
 </footer>
 
 <script>
