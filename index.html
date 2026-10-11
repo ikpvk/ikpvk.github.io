@@ -195,7 +195,7 @@
   .jobs { list-style: none; margin: 0; padding: 0; }
   .jobs li { display: grid; grid-template-columns: 170px 1fr; gap: 4px 24px; padding: 20px 0; border-bottom: 1px dashed var(--border); }
   .jobs li:first-child { padding-top: 0; }
-  .jobs li:last-child { border-bottom: 0; }
+  .jobs li:last-child { border-bottom: 0; padding-bottom: 0; }
   .jobs time { color: var(--muted); font-size: 13px; padding-top: 2px; }
   .jobs h3 { margin: 0; font-size: 15px; }
   .jobs h3 span { color: var(--accent-2); font-weight: 400; }
@@ -207,17 +207,17 @@
   /* Projects */
   .projects { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
   .projects .card { display: flex; flex-direction: column; }
-  .projects p { margin: 0 0 16px; color: var(--muted); font-size: 14px; flex: 1; }
+  .projects p { margin: 0 0 12px; color: var(--muted); font-size: 14px; flex: 1; }
 
   /* Contact */
   .contact p { color: var(--muted); max-width: 60ch; margin: 0 0 24px; }
 
-  footer { padding: 32px 0 48px; color: var(--muted); font-size: 13px; }
-  /* Music player: a small card above the footer line, shown only once JS has run */
-  .player { display: none; }
-  .js .player {
+  /* Music player: the footer's only content, so the footer is shown only once JS has run */
+  footer { display: none; padding: 32px 0 48px; border-top: 1px solid var(--border); font-size: 13px; }
+  .js footer { display: block; }
+  .player {
     display: flex; align-items: center; gap: 16px;
-    margin-bottom: 24px; padding: 12px 16px;
+    padding: 12px 16px;
     background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
     color: var(--text);
   }
@@ -310,7 +310,7 @@
     /* Put "@ company" on its own line under the title */
     .jobs h3 span { display: block; }
     /* The progress bar moves to its own row under the track */
-    .js .player { flex-wrap: wrap; gap: 12px; }
+    .player { flex-wrap: wrap; gap: 12px; }
     .player-track { flex: 1; }
     .player-progress { flex-basis: 100%; }
   }
@@ -560,7 +560,6 @@
         <input type="range" id="playerVolume" min="0" max="1" step="0.05" value="0.6" aria-label="Volume">
       </label>
     </div>
-    © <span id="year"></span> Krishna Prasad V K · built with plain HTML &amp; CSS
   </div>
 </footer>
 
@@ -573,7 +572,6 @@
 </dialog>
 
 <script>
-  document.getElementById("year").textContent = new Date().getFullYear();
   var themeTransition = null;
   document.getElementById("themeToggle").addEventListener("click", function () {
     var root = document.documentElement;
