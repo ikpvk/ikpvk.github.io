@@ -212,15 +212,17 @@
   /* Contact */
   .contact p { color: var(--muted); max-width: 60ch; margin: 0 0 24px; }
 
-  /* Music player: the footer's only content, so the footer is shown only once JS has run */
+  /* Footer: the music player and local time cards both need JS, so the footer is shown only once it has run */
   footer { display: none; padding: 32px 0 48px; border-top: 1px solid var(--border); font-size: 13px; }
   .js footer { display: block; }
-  .player {
-    display: flex; align-items: center; gap: 16px;
+  /* The time card moves under the player when there's no room for the player's progress bar beside it */
+  .footer-cards { display: flex; flex-wrap: wrap; gap: 16px; }
+  .player, .local {
     padding: 12px 16px;
     background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
     color: var(--text);
   }
+  .player { display: flex; align-items: center; gap: 16px; flex: 999 1 520px; min-width: 0; }
   .player button {
     display: inline-flex; align-items: center; justify-content: center; flex: none;
     padding: 0; border: 0; cursor: pointer;
@@ -238,6 +240,12 @@
   .player-volume { display: flex; align-items: center; gap: 8px; color: var(--muted); }
   .player-volume svg { width: 16px; height: 16px; flex: none; }
   .player-volume input { width: 80px; }
+
+  /* Local time and weather: laid out like the player's track title and artist lines */
+  .local { display: flex; flex-direction: column; justify-content: center; flex: 1 0 auto; line-height: 1.35; white-space: nowrap; }
+  .local b { font-size: 14px; font-variant-numeric: tabular-nums; }
+  .local span { font-size: 12px; color: var(--muted); }
+  .local svg { width: 13px; height: 13px; margin: 0 4px 0 2px; vertical-align: -2px; }
 
   /* Sliders: an accent fill up to the thumb, driven by --p from the script */
   .player input[type="range"] {
@@ -313,6 +321,7 @@
     .player { flex-wrap: wrap; gap: 12px; }
     .player-track { flex: 1; }
     .player-progress { flex-basis: 100%; }
+    .footer-cards { gap: 12px; }
   }
   /* Phones and tablets set volume with their own buttons (iOS ignores it from scripts) */
   @media (max-width: 640px), (hover: none) {
@@ -538,7 +547,7 @@
 </main>
 
 <footer>
-  <div class="wrap">
+  <div class="wrap footer-cards">
     <!-- Music player -->
     <div class="player" id="player" role="region" aria-label="Music player">
       <audio id="playerAudio" src="audio/rose-water.mp3" preload="none" loop></audio>
@@ -559,6 +568,11 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H2v6h4l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg>
         <input type="range" id="playerVolume" min="0" max="1" step="0.05" value="0.6" aria-label="Volume">
       </label>
+    </div>
+    <!-- Local time and weather in Hyderabad, filled in by the script -->
+    <div class="local" role="region" aria-label="Local time and weather">
+      <div><b id="localTime"></b><span id="localHint"></span></div>
+      <span id="localWeather">Hyderabad</span>
     </div>
   </div>
 </footer>
@@ -705,6 +719,91 @@
     navigator.mediaSession.setActionHandler("play", function () { audio.play().catch(function () {}); });
     navigator.mediaSession.setActionHandler("pause", function () { audio.pause(); });
     navigator.mediaSession.setActionHandler("seekto", function (e) { audio.currentTime = e.seekTime; });
+  }
+
+  // Local time and weather in Hyderabad
+  var localTime = document.getElementById("localTime");
+  var localWeather = document.getElementById("localWeather");
+  var localHint = document.getElementById("localHint");
+  var clock = new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Kolkata", hour: "numeric", minute: "2-digit" });
+  var dayHour = new Intl.DateTimeFormat("en-US", { timeZone: "Asia/Kolkata", weekday: "short", hour: "numeric", hourCycle: "h23" });
+  // A rough guess at what I'm doing, from the day and hour in Hyderabad
+  function describeHours(date) {
+    var parts = {};
+    dayHour.formatToParts(date).forEach(function (p) { parts[p.type] = p.value; });
+    var hour = Number(parts.hour);
+    if (hour < 7 || hour >= 21) return "probably asleep";
+    if (parts.weekday === "Sat" || parts.weekday === "Sun") return "weekend mode";
+    if (hour < 9) return "coffee first";
+    if (hour === 12 || hour === 13) return "at lunch";
+    if (hour < 18) return "probably coding";
+    return "off the clock";
+  }
+  // Redraw at the start of every minute
+  function tick() {
+    var now = new Date();
+    localTime.textContent = clock.format(now) + " IST";
+    localHint.textContent = " · " + describeHours(now);
+    setTimeout(tick, 60000 - Date.now() % 60000);
+  }
+  tick();
+  // Weather icons, in the page's stroke style. Paths from Lucide (lucide.dev, ISC license).
+  var cloudTop = '<path d="M4 14.9A7 7 0 1 1 15.7 8h1.8a4.5 4.5 0 0 1 2.5 8.2"/>';
+  var weatherIcons = {
+    sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+    moon: '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',
+    cloudSun: '<path d="M12 2v2M4.9 4.9l1.4 1.4M20 12h2M19.1 4.9l-1.4 1.4M15.9 12.7a4 4 0 0 0-5.9-4.1"/><path d="M13 22H7a5 5 0 1 1 4.9-6H13a3 3 0 0 1 0 6z"/>',
+    cloud: '<path d="M17.5 19H9a7 7 0 1 1 6.7-9h1.8a4.5 4.5 0 1 1 0 9z"/>',
+    fog: cloudTop + '<path d="M16 17H7M17 21H9"/>',
+    drizzle: cloudTop + '<path d="M8 19v1M8 14v1M16 19v1M16 14v1M12 21v1M12 16v1"/>',
+    rain: cloudTop + '<path d="M16 14v6M8 14v6M12 16v6"/>',
+    snow: cloudTop + '<path d="M8 15h.01M8 19h.01M12 17h.01M12 21h.01M16 15h.01M16 19h.01"/>',
+    storm: '<path d="M6 16.3A7 7 0 1 1 15.7 8h1.8a4.5 4.5 0 0 1 .5 9"/><path d="m13 12-3 5h4l-3 5"/>'
+  };
+  // Open-Meteo WMO weather codes, see https://open-meteo.com/en/docs
+  function describeWeather(code, isDay) {
+    if (code === 0) return isDay ? ["clear", "sun"] : ["clear", "moon"];
+    if (code <= 2) return ["partly cloudy", isDay ? "cloudSun" : "cloud"];
+    if (code === 3) return ["cloudy", "cloud"];
+    if (code <= 48) return ["fog", "fog"];
+    if (code <= 57) return ["drizzle", "drizzle"];
+    if (code === 61 || code === 80) return ["light rain", "rain"];
+    if (code <= 67) return ["rain", "rain"];
+    if (code <= 77) return ["snow", "snow"];
+    if (code <= 82) return ["rain", "rain"];
+    if (code <= 86) return ["snow", "snow"];
+    return ["thunderstorm", "storm"];
+  }
+  function showWeather(w) {
+    var d = describeWeather(w.weather_code, w.is_day !== 0);
+    localWeather.innerHTML = "Hyderabad · " + Math.round(w.temperature_2m) + "°C, " +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+      weatherIcons[d[1]] + "</svg>" + d[0];
+  }
+  // Fetch once the footer is close to view, and reuse the result for 30 minutes.
+  // If the request fails, the card keeps showing just the city.
+  function loadWeather() {
+    var cached = null;
+    try { cached = JSON.parse(sessionStorage.getItem("weather")); } catch (e) {}
+    if (cached && Date.now() - cached.at < 30 * 60000) return showWeather(cached);
+    fetch("https://api.open-meteo.com/v1/forecast?latitude=17.385&longitude=78.4867&current=temperature_2m,weather_code,is_day")
+      .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
+      .then(function (data) {
+        var w = { temperature_2m: data.current.temperature_2m, weather_code: data.current.weather_code, is_day: data.current.is_day, at: Date.now() };
+        showWeather(w);
+        try { sessionStorage.setItem("weather", JSON.stringify(w)); } catch (e) {}
+      })
+      .catch(function () {});
+  }
+  if ("IntersectionObserver" in window) {
+    var weatherObserver = new IntersectionObserver(function (entries) {
+      if (!entries[0].isIntersecting) return;
+      weatherObserver.disconnect();
+      loadWeather();
+    }, { rootMargin: "400px" });
+    weatherObserver.observe(localWeather);
+  } else {
+    loadWeather();
   }
 </script>
 </body>

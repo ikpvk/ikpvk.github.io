@@ -4,7 +4,7 @@
 
 This GitHub Pages portfolio keeps markup, CSS, vanilla JavaScript, and inline SVGs in `index.html`. Sections run hero, About, Skills, Experience, Projects, Contact; navigation follows that order. Contact holds Email, GitHub, LinkedIn, and the sole Download CV button. Keep content consistent with `Krishna_Prasad_V_K_resume.pdf`.
 
-Assets live in `fonts/`, `audio/`, and `favicon.svg`. `flappy/` contains the Apache-2.0 Flappy Bird game and its scripts/assets; preserve its license and credits. `CLAUDE.md` explains architecture; keep it synchronized with this guide. `audio/CREDITS.md` specifies music attribution. `README.md` is a placeholder.
+Assets live in `fonts/`, `audio/`, and `favicon.svg`. `flappy/` contains the Apache-2.0 Flappy Bird game and its scripts/assets; preserve its license and credits. `CLAUDE.md` explains architecture; keep it synchronized with this guide. `audio/CREDITS.md` specifies music attribution. `README.md` is a short public summary.
 
 ## Build, Test, and Development Commands
 
@@ -20,15 +20,15 @@ Match surrounding code: two-space CSS/JavaScript indentation in `index.html`, do
 
 Keep all three theme palettes synchronized, early theme initialization, transition cancellation, reduced-motion fallbacks, accessible labels, and focus styles. Keep the 56px header, dropdown offset, and section scroll margins aligned. At 640px and below without JavaScript, navigation wraps and the header is non-sticky.
 
-## Music & Game Conventions
+## Footer & Game Conventions
 
-The player is the footer's only content; the entire footer is hidden without `.js`. Preserve `preload="none"`, looping, and visible massobeats / rose water credits. Track changes require updating credits, Media Session metadata, and initial duration/seek values (139 seconds, `2:19`). Keep slider fills and playback labels synchronized. At ≤640px, progress wraps; volume is hidden there and on devices without hover.
+The footer holds the player and a local time and weather card; both need JavaScript, so the entire footer is hidden without `.js`. The weather is the only third-party request (Open-Meteo); keep it lazy, cached, and silent on failure. The hours hint follows a fixed IST schedule in `describeHours`; change the hours there. Preserve `preload="none"`, looping, and visible massobeats / rose water credits. Track changes require updating credits, Media Session metadata, and initial duration/seek values (139 seconds, `2:19`). Keep slider fills and playback labels synchronized. At ≤640px, progress wraps; volume is hidden there and on devices without hover.
 
 Every fifth theme toggle opens the same-origin game iframe and pauses music. Load it only on opening; unload on closing. Preserve Space/tap input, Escape handling, focus return, reduced motion, and Web Audio gesture unlocking on press/release. Audio failures must not block gameplay.
 
 ## Testing Guidelines
 
-Manually check 320/360px and both sides of 640px, with/without JavaScript; both themes, persistence, rapid toggles, keyboard navigation, menus, and reduced motion. Verify player controls, OS media controls, game opening/closing, touch input, CV/assets, and console errors.
+Manually check 320/360px and both sides of 640px, with/without JavaScript; both themes, persistence, rapid toggles, keyboard navigation, menus, and reduced motion. Verify player controls, OS media controls, the time/hint/weather card (and its fallback when the weather request fails), game opening/closing, touch input, CV/assets, and console errors.
 
 ## Commit & Pull Request Guidelines
 
