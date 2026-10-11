@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-A single-page personal portfolio served by GitHub Pages at https://ikpvk.github.io/ straight from the `main` branch. It is plain HTML, CSS and vanilla JS with no build step, package manager, linter or tests. Everything (styles, scripts, inline SVG icons) lives in `index.html`. The only other assets are `favicon.svg`, a self-hosted JetBrains Mono font (`fonts/`, SIL OFL), the music track in `audio/`, a copy of the Flappy Bird easter egg game in `flappy/`, and `Krishna_Prasad_V_K_resume.pdf`, which the "Download CV" buttons link to. The page content (experience, projects, skills, education) is taken from that résumé, so keep the two consistent.
+A single-page personal portfolio served by GitHub Pages at https://ikpvk.github.io/ straight from the `main` branch. It is plain HTML, CSS and vanilla JS with no build step, package manager, linter or tests. Everything (styles, scripts, inline SVG icons) lives in `index.html`. The only other assets are `favicon.svg`, a self-hosted JetBrains Mono font (`fonts/`, SIL OFL), the music track in `audio/`, a copy of the Flappy Bird easter egg game in `flappy/`, and `Krishna_Prasad_V_K_resume.pdf`, which the contact section's "Download CV" button links to. The page content (experience, projects, skills, education) is taken from that résumé, so keep the two consistent.
 
 ## Running locally
 
