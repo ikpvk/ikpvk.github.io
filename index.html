@@ -739,14 +739,6 @@
     if (hour < 18) return "probably coding";
     return "off the clock";
   }
-  // Redraw at the start of every minute
-  function tick() {
-    var now = new Date();
-    localTime.textContent = clock.format(now) + " IST";
-    localHint.textContent = " · " + describeHours(now);
-    setTimeout(tick, 60000 - Date.now() % 60000);
-  }
-  tick();
   // Weather icons, in the page's stroke style. Paths from Lucide (lucide.dev, ISC license).
   var cloudTop = '<path d="M4 14.9A7 7 0 1 1 15.7 8h1.8a4.5 4.5 0 0 1 2.5 8.2"/>';
   var weatherIcons = {
@@ -774,37 +766,67 @@
     if (code <= 86) return ["snow", "snow"];
     return ["thunderstorm", "storm"];
   }
-  function showWeather(w) {
-    var d = describeWeather(w.weather_code, w.is_day !== 0);
-    localWeather.innerHTML = "Hyderabad · " + Math.round(w.temperature_2m) + "°C, " +
+  // The latest reading, kept in sessionStorage so other pages in the session reuse it
+  var weather = null;
+  try { weather = JSON.parse(sessionStorage.getItem("weather")); } catch (e) {}
+  var weatherTried = 0;
+  // Only fetch once the footer is close to view (without IntersectionObserver, straight away)
+  var footerNear = !("IntersectionObserver" in window);
+  function showWeather() {
+    // Hide readings over 2 hours old, such as after the computer slept, rather than show stale weather
+    if (!weather || Date.now() - weather.at > 2 * 3600000) {
+      localWeather.textContent = "Hyderabad";
+      return;
+    }
+    var d = describeWeather(weather.weather_code, weather.is_day !== 0);
+    localWeather.innerHTML = "Hyderabad · " + Math.round(weather.temperature_2m) + "°C, " +
       '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
       weatherIcons[d[1]] + "</svg>" + d[0];
   }
-  // Fetch once the footer is close to view, and reuse the result for 30 minutes.
-  // If the request fails, the card keeps showing just the city.
-  function loadWeather() {
-    var cached = null;
-    try { cached = JSON.parse(sessionStorage.getItem("weather")); } catch (e) {}
-    if (cached && Date.now() - cached.at < 30 * 60000) return showWeather(cached);
-    fetch("https://api.open-meteo.com/v1/forecast?latitude=17.385&longitude=78.4867&current=temperature_2m,weather_code,is_day")
+  // Refresh readings over 30 minutes old while the tab is visible. Requests that fail
+  // or take over 5 seconds leave the card as it was, and are retried after 5 minutes.
+  function updateWeather() {
+    var now = Date.now();
+    if (!footerNear || document.hidden) return;
+    if (weather && now - weather.at < 30 * 60000) return;
+    if (now - weatherTried < 5 * 60000) return;
+    weatherTried = now;
+    var controller = window.AbortController ? new AbortController() : null;
+    var timeout = controller && setTimeout(function () { controller.abort(); }, 5000);
+    fetch("https://api.open-meteo.com/v1/forecast?latitude=17.385&longitude=78.4867&current=temperature_2m,weather_code,is_day",
+      controller ? { signal: controller.signal } : {})
       .then(function (r) { return r.ok ? r.json() : Promise.reject(); })
       .then(function (data) {
-        var w = { temperature_2m: data.current.temperature_2m, weather_code: data.current.weather_code, is_day: data.current.is_day, at: Date.now() };
-        showWeather(w);
-        try { sessionStorage.setItem("weather", JSON.stringify(w)); } catch (e) {}
+        var c = data.current;
+        if (typeof c.temperature_2m !== "number" || typeof c.weather_code !== "number") return;
+        weather = { temperature_2m: c.temperature_2m, weather_code: c.weather_code, is_day: c.is_day, at: Date.now() };
+        try { sessionStorage.setItem("weather", JSON.stringify(weather)); } catch (e) {}
+        showWeather();
       })
-      .catch(function () {});
+      .catch(function () {})
+      .then(function () { clearTimeout(timeout); });
   }
-  if ("IntersectionObserver" in window) {
-    var weatherObserver = new IntersectionObserver(function (entries) {
-      if (!entries[0].isIntersecting) return;
-      weatherObserver.disconnect();
-      loadWeather();
-    }, { rootMargin: "400px" });
-    weatherObserver.observe(localWeather);
-  } else {
-    loadWeather();
+  // Redraw at the start of every minute, and straight away when the tab is shown again
+  var tickTimer;
+  function tick() {
+    clearTimeout(tickTimer);
+    var now = new Date();
+    localTime.textContent = clock.format(now) + " IST";
+    localHint.textContent = " · " + describeHours(now);
+    showWeather();
+    updateWeather();
+    tickTimer = setTimeout(tick, 60000 - Date.now() % 60000);
   }
+  document.addEventListener("visibilitychange", function () {
+    if (!document.hidden) tick();
+  });
+  if (!footerNear) {
+    new IntersectionObserver(function (entries) {
+      footerNear = entries[0].isIntersecting;
+      updateWeather();
+    }, { rootMargin: "400px" }).observe(localWeather);
+  }
+  tick();
 </script>
 </body>
 </html>

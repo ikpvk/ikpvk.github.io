@@ -22,7 +22,7 @@ Keep all three theme palettes synchronized, early theme initialization, transiti
 
 ## Footer & Game Conventions
 
-The footer holds the player and a local time and weather card; both need JavaScript, so the entire footer is hidden without `.js`. The weather is the only third-party request (Open-Meteo); keep it lazy, cached, and silent on failure. The hours hint follows a fixed IST schedule in `describeHours`; change the hours there. Preserve `preload="none"`, looping, and visible massobeats / rose water credits. Track changes require updating credits, Media Session metadata, and initial duration/seek values (139 seconds, `2:19`). Keep slider fills and playback labels synchronized. At ≤640px, progress wraps; volume is hidden there and on devices without hover.
+The footer holds the player and a local time and weather card; both need JavaScript, so the entire footer is hidden without `.js`. The weather is the only third-party request (Open-Meteo); keep it lazy, cached, refreshed while the tab is open, and silent on failure. The hours hint follows a fixed IST schedule in `describeHours`; change the hours there. Preserve `preload="none"`, looping, and visible massobeats / rose water credits. Track changes require updating credits, Media Session metadata, and initial duration/seek values (139 seconds, `2:19`). Keep slider fills and playback labels synchronized. At ≤640px, progress wraps; volume is hidden there and on devices without hover.
 
 Every fifth theme toggle opens the same-origin game iframe and pauses music. Load it only on opening; unload on closing. Preserve Space/tap input, Escape handling, focus return, reduced motion, and Web Audio gesture unlocking on press/release. Audio failures must not block gameplay.
 
